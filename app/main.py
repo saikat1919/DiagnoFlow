@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 from sqlalchemy import text
 from app.core.config import Settings, get_settings
 from app.db.session import SessionDep
+import app.db.all_models
 
 app = FastAPI(title=get_settings().APP_NAME)
 

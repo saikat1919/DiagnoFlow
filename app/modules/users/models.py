@@ -41,8 +41,6 @@ class User(Base, TimeStampMixin):
             length=20,
             values_callable=lambda e: [m.value for m in e]
         ),
-        default=Role.PATIENT,
-        server_default=Role.PATIENT.value
     )
     patient_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("patients.id"), unique=True, index=True, nullable=True
