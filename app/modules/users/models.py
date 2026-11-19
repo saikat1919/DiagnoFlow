@@ -13,6 +13,13 @@ class Role(str, enum.Enum):
     PHARMACY_MANAGER = "pharmacy_manager"
     PATIENT = "patient"
 
+STAFF_ROLES = {
+    Role.RECEPTIONIST,
+    Role.LAB_TECHNICIAN,
+    Role.PHARMACIST,
+    Role.PHARMACY_MANAGER
+}
+
 class User(Base, TimeStampMixin):
     __tablename__ = 'users'
     __table_args__ = (
