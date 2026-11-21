@@ -7,8 +7,10 @@ from sqlalchemy import (String, Integer,
                         Numeric, DateTime, Enum,
                         UniqueConstraint,
                         CheckConstraint, func)
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base, TimeStampMixin
+from app.modules.medicines.models import Medicine
+from app.modules.suppliers.models import Supplier
 
 class MedicineBatchStatus(str, enum.Enum):
     ACTIVE = "active"
@@ -64,6 +66,8 @@ class MedicineBatch(Base, TimeStampMixin):
         server_default=MedicineBatchStatus.ACTIVE.value,
         index=True
     )
+    medicine: Mapped[Medicine] = relationship(lazy="joined")
+    supplier: Mapped[Supplier] = relationship(lazy="joined")
 
 class MovementType(str, enum.Enum):
     RECEIVED = "received"
