@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_SCHEMA: str
 
+    JWT_SECRET: SecretStr
+    JWT_ALGORITHM: str
+    ACCESS_TOKEN_EXPIRES: int
+
     @property
     def DATABASE_URL(self) -> URL:
         return URL.create(
