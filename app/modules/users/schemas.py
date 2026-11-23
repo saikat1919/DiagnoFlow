@@ -51,3 +51,7 @@ class ReadUser(BaseModel):
     role: Role
     is_active: bool
     patient_id: uuid.UUID | None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
