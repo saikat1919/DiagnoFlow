@@ -12,7 +12,7 @@ class CreateUserStaff(BaseModel):
 
     first_name: str = Field(min_length=1, max_length=50)
     last_name: str = Field(min_length=1, max_length=50)
-    mobile_number: str = Field(min_length=11, max_length=14)
+    mobile_number: str = Field(pattern=MOBILE_NUMBER_PATTERN)
     email: EmailStr
     password: str = Field(min_length=8)
     role: Role

@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     JWT_SECRET: SecretStr
     JWT_ALGORITHM: str
-    ACCESS_TOKEN_EXPIRES: int
+    ACCESS_TOKEN_MINUTES: int
 
     @property
     def DATABASE_URL(self) -> URL:

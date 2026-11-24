@@ -24,7 +24,10 @@ class Patient(Base, TimeStampMixin):
         unique=True,
         index=True
     )
-    patient_name: Mapped[str] = mapped_column(
+    patient_first_name: Mapped[str] = mapped_column(
+        String(length=255)
+    )
+    patient_last_name: Mapped[str] = mapped_column(
         String(length=255)
     )
     sex: Mapped[Sex] = mapped_column(

@@ -32,7 +32,7 @@ class User(Base, TimeStampMixin):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     first_name: Mapped[str] = mapped_column(String(length=255))
     last_name: Mapped[str] = mapped_column(String(length=255))
-    mobile_number: Mapped[str] = mapped_column(String(length=255))
+    mobile_number: Mapped[str] = mapped_column(String(length=14), unique=True)
     email: Mapped[str] = mapped_column(
         String(length=255),
         unique=True,

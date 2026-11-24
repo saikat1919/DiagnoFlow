@@ -1,7 +1,10 @@
 import uuid
+
+from app.modules.patients.repositories import PatientRepository
 from app.modules.users.models import User, Role
 from app.modules.users.repositories import UserRepository
 from app.modules.users.schemas import (CreateUserStaff,
+                                       PatientAccountCreate,
                                        ReadUser, UserUpdate, Token)
 from app.core.exceptions.errors import (ConflictError,
                                         UnauthorizedError,
@@ -13,14 +16,17 @@ from app.core.security import (hash_password,
                                decode_access_token)
 
 class UserService:
-    def __init__(self, repo: UserRepository) -> None:
+    def __init__(self, repo: UserRepository, patient_repo: PatientRepository) -> None:
         self.repo = repo
+        self.patient_repo = patient_repo
 
     async def register_user(self, data: CreateUserStaff) -> ReadUser:
         email = data.email.lower()
         if (await self.repo.get_by_email(email)
                 or await self.repo.get_by_mobile_number(data.mobile_number)):
             raise ConflictError("User", email)
+        if data.role == Role.SYSTEM_ADMIN or data.role == Role.PATIENT:
+            raise ForbiddenError("Role must be a staff role.")
 
         user = User(
             email=email,
@@ -40,12 +46,33 @@ class UserService:
             raise UnauthorizedError("Account is disabled")
         return Token(access_token=create_access_token(user.id))
 
+    async def create_patient_account(self, data: PatientAccountCreate) -> ReadUser:
+        patient = await self.patient_repo.get_by_phone(data.username)
+        if patient is not None:
+            raise NotFoundError("Patient", data.username)
+
+        if await self.repo.get_by_patient_id(patient.id) is not None:
+            raise ConflictError("User", data.username)
+        if await self.repo.get_by_mobile_number(patient.phone_number) is not None:
+            raise ConflictError("User", patient.phone_number)
+        user = User(
+            first_name=patient.first_name,
+            last_name=patient.last_name,
+            mobile_number=patient.phone_number,
+            password=hash_password(data.password),
+            email=None,
+            role=Role.PATIENT,
+            patient_id=patient.id,
+            is_active=True
+        )
+        return ReadUser.model_validate(await self.repo.add(user))
+
     async def get_user_by_token(self, token: str) -> User:
         payload = decode_access_token(token)
         if payload is None:
             raise UnauthorizedError("Invalid or expired token")
 
-        user: User | None = await self.repo.get_by_id(payload["sub"])
+        user: User | None = await self.repo.get_by_id(uuid.UUID(payload["sub"]))
 
         if user is None or not user.is_active:
             raise UnauthorizedError("Invalid or expired token")

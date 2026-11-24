@@ -4,11 +4,12 @@ from fastapi.security import OAuth2PasswordBearer
 from app.modules.users.models import User, Role
 from app.db.session import SessionDep
 from app.modules.users.services import UserService
+from app.modules.patients.repositories import PatientRepository
 from app.modules.users.repositories import UserRepository
 from app.core.exceptions.errors import ForbiddenError
 
 def get_user_service(session: SessionDep) -> UserService:
-    return UserService(UserRepository(session))
+    return UserService(UserRepository(session), PatientRepository(session))
 
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 
