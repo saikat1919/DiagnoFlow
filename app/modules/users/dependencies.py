@@ -5,6 +5,7 @@ from app.modules.users.models import User, Role
 from app.db.session import SessionDep
 from app.modules.users.services import UserService
 from app.modules.patients.repositories import PatientRepository
+from app.modules.users.models import User, Role, STAFF_ROLES
 from app.modules.users.repositories import UserRepository
 from app.core.exceptions.errors import ForbiddenError
 
@@ -29,3 +30,10 @@ async def require_admin(user: CurrentUserDep) -> User:
     return user
 
 AdminDep = Annotated[User, Depends(require_admin)]
+
+async def require_staff(user: CurrentUserDep) -> User:
+    if user.role != Role.SYSTEM_ADMIN and user.role not in STAFF_ROLES:
+        raise ForbiddenError("Staff privileges required")
+    return user
+
+StaffDep = Annotated[User, Depends(require_staff)]

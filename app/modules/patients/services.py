@@ -4,7 +4,7 @@ from app.modules.users.schemas import PatientAccountCreate
 from app.modules.patients.models import Patient
 from app.modules.patients.schemas import PatientRead, PatientCreate
 from app.modules.patients.repositories import PatientRepository
-from app.core.exceptions.errors import ConflictError
+from app.core.exceptions.errors import ConflictError, NotFoundError
 
 
 class PatientService:
@@ -25,3 +25,14 @@ class PatientService:
         )
 
         return PatientRead.model_validate(await self.repo.add(patient))
+
+    async def get_patient_by_id(self, patient_id: uuid.UUID) -> PatientRead:
+        patient = await self.repo.get_by_id(patient_id)
+        if patient is None:
+            raise NotFoundError("Patient", str(patient_id))
+
+        return PatientRead.model_validate(patient)
+
+    async def search_patients(self, q: str | None, page: int, page_size: int) -> tuple[list[PatientRead], int]:
+        patients, total = await self.repo.search(q, page, page_size)
+        return [PatientRead.model_validate(p) for p in patients], total

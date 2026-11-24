@@ -48,7 +48,7 @@ class UserService:
 
     async def create_patient_account(self, data: PatientAccountCreate) -> ReadUser:
         patient = await self.patient_repo.get_by_phone(data.username)
-        if patient is not None:
+        if patient is None:
             raise NotFoundError("Patient", data.username)
 
         if await self.repo.get_by_patient_id(patient.id) is not None:
@@ -56,8 +56,8 @@ class UserService:
         if await self.repo.get_by_mobile_number(patient.phone_number) is not None:
             raise ConflictError("User", patient.phone_number)
         user = User(
-            first_name=patient.first_name,
-            last_name=patient.last_name,
+            first_name=patient.patient_first_name,
+            last_name=patient.patient_last_name,
             mobile_number=patient.phone_number,
             password=hash_password(data.password),
             email=None,
