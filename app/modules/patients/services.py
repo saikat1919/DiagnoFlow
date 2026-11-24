@@ -1,8 +1,6 @@
 import uuid
-from app.modules.users.models import User
-from app.modules.users.schemas import PatientAccountCreate
 from app.modules.patients.models import Patient
-from app.modules.patients.schemas import PatientRead, PatientCreate
+from app.modules.patients.schemas import PatientRead, PatientCreate, PatientUpdate
 from app.modules.patients.repositories import PatientRepository
 from app.core.exceptions.errors import ConflictError, NotFoundError
 
@@ -36,3 +34,23 @@ class PatientService:
     async def search_patients(self, q: str | None, page: int, page_size: int) -> tuple[list[PatientRead], int]:
         patients, total = await self.repo.search(q, page, page_size)
         return [PatientRead.model_validate(p) for p in patients], total
+
+    async def update_patient(self, patient_id: uuid.UUID, data: PatientUpdate) -> PatientRead:
+        patient = await self.repo.get_by_id(patient_id)
+        if patient is None:
+            raise NotFoundError("Patient", str(patient_id))
+
+        updated_data = data.model_dump(exclude_unset=True)
+        new_data = {
+            key: value for key, value in updated_data.items() if value is not None
+        }
+
+        if "phone_number" in new_data:
+            existing = await self.repo.get_by_phone(new_data["phone_number"])
+            if existing is not None and existing.id != patient.id:
+                raise ConflictError("Patient", new_data["phone_number"])
+
+        for key, value in new_data.items():
+            setattr(patient, key, value)
+
+        return PatientRead.model_validate(await self.repo.save(patient))

@@ -93,3 +93,13 @@ class StockMovementRead(BaseModel):
     quantity: int
     created_by: uuid.UUID
     created_at: datetime
+
+class LowStockRead(BaseModel):
+    medicine: MedicineSummary
+    usable_stock: int
+    reorder_level: int
+
+
+class AvailableStockRead(BaseModel):
+    medicine_id: uuid.UUID
+    usable_stock: int

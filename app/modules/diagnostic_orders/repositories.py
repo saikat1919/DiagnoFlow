@@ -28,6 +28,11 @@ class DiagnosticOrderRepository:
     async def get_item_by_id(self, item_id: uuid.UUID) -> DiagnosticOrderItem | None:
         return await self.db_session.get(DiagnosticOrderItem, item_id)
 
+    async def save_item(self, item: DiagnosticOrderItem) -> DiagnosticOrderItem:
+        await self.db_session.flush()
+        await self.db_session.refresh(item)
+        return item
+
     async def search(
             self,
             q: str | None,

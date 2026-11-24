@@ -79,6 +79,24 @@ class UserService:
 
         return user
 
+    async def get_user_by_id(self, user_id: uuid.UUID) -> ReadUser:
+        user = await self.repo.get_by_id(user_id)
+        if user is None:
+            raise NotFoundError("User", str(user_id))
+
+        return ReadUser.model_validate(user)
+
+    async def search_users(
+            self,
+            q: str | None,
+            role: Role | None,
+            is_active: bool | None,
+            page: int,
+            page_size: int
+    ) -> tuple[list[ReadUser], int]:
+        users, total = await self.repo.search(q, role, is_active, page, page_size)
+        return [ReadUser.model_validate(u) for u in users], total
+
     async def update_staff_user(self, user_id: uuid.UUID, data: UserUpdate) -> ReadUser:
         user = await self.repo.get_by_id(user_id)
         if user is None:

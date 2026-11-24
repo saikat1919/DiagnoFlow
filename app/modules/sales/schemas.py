@@ -1,6 +1,6 @@
 import uuid
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, date
 from typing import Annotated, Optional
 from pydantic import (BaseModel, ConfigDict, Field,
                       model_validator, AliasPath)
@@ -55,6 +55,11 @@ class SaleItemRead(BaseModel):
     unit_price: Decimal
     line_total: Decimal
 
+class DailyTotalRead(BaseModel):
+    sale_date: date
+    sale_count: int
+    total_amount: Decimal
+    paid_amount: Decimal
 
 class SaleRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
