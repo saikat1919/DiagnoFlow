@@ -4,7 +4,7 @@ import { ErrorBanner, Field, inputProps } from './ui.jsx'
 import { Dashboard, PatientsView, UsersView } from './views/people.jsx'
 import { CatalogueView, OrdersView, ReportsView } from './views/operations.jsx'
 import { InventoryView, MedicinesView, PharmacyView, PurchasesView } from './views/pharmacy.jsx'
-import { ChatView, KnowledgeView, PrescriptionsView, SalesView } from './views/care.jsx'
+import { ChatView, PrescriptionsView, SalesView } from './views/care.jsx'
 
 // Navigation, by role. The backend enforces the same rules; hiding a
 // page here is only for clarity — a forbidden call still returns 403.
@@ -21,7 +21,6 @@ const NAV = {
     ['purchases', 'Purchases'],
     ['prescriptions', 'Prescriptions'],
     ['sales', 'Sales'],
-    ['knowledge', 'Knowledge'],
     ['chat', 'Assistant'],
   ],
   RECEPTIONIST: [
@@ -33,7 +32,6 @@ const NAV = {
     ['medicines', 'Medicines & suppliers'],
     ['prescriptions', 'Prescriptions'],
     ['sales', 'Sales'],
-    ['knowledge', 'Knowledge'],
     ['chat', 'Assistant'],
   ],
   LAB_TECHNICIAN: [
@@ -41,7 +39,6 @@ const NAV = {
     ['orders', 'Orders'],
     ['reports', 'Reports'],
     ['catalogue', 'Test catalogue'],
-    ['knowledge', 'Knowledge'],
     ['chat', 'Assistant'],
   ],
   PHARMACIST: [
@@ -51,7 +48,6 @@ const NAV = {
     ['purchases', 'Purchases'],
     ['prescriptions', 'Prescriptions'],
     ['sales', 'Sales'],
-    ['knowledge', 'Knowledge'],
     ['chat', 'Assistant'],
   ],
   PHARMACY_MANAGER: [
@@ -61,7 +57,6 @@ const NAV = {
     ['purchases', 'Purchases'],
     ['prescriptions', 'Prescriptions'],
     ['sales', 'Sales'],
-    ['knowledge', 'Knowledge'],
     ['chat', 'Assistant'],
   ],
   PATIENT: [
@@ -72,7 +67,6 @@ const NAV = {
     ['medicines', 'Pharmacy'],
     ['prescriptions', 'My prescriptions'],
     ['sales', 'My purchases'],
-    ['knowledge', 'Knowledge search'],
     ['chat', 'Assistant'],
   ],
 }
@@ -183,8 +177,8 @@ export default function App() {
   // list, so "View inventory" looked dead for every role whose sidebar
   // did not list Inventory, even though the backend allows staff reads.
   // The backend still enforces every guard; this only stops dead links.
-  const STAFF_VIEWS = ['dashboard', 'patients', 'orders', 'reports', 'catalogue', 'medicines', 'inventory', 'purchases', 'prescriptions', 'sales', 'knowledge', 'chat']
-  const PATIENT_VIEWS = ['dashboard', 'orders', 'reports', 'catalogue', 'medicines', 'prescriptions', 'sales', 'knowledge', 'chat']
+  const STAFF_VIEWS = ['dashboard', 'patients', 'orders', 'reports', 'catalogue', 'medicines', 'inventory', 'purchases', 'prescriptions', 'sales', 'chat']
+  const PATIENT_VIEWS = ['dashboard', 'orders', 'reports', 'catalogue', 'medicines', 'prescriptions', 'sales', 'chat']
   const allowedViews = userRole(user) === 'PATIENT'
     ? PATIENT_VIEWS
     : userRole(user) === 'SYSTEM_ADMIN'
@@ -229,7 +223,6 @@ export default function App() {
         {activeView === 'purchases' && <PurchasesView user={user} />}
         {activeView === 'prescriptions' && <PrescriptionsView user={user} />}
         {activeView === 'sales' && <SalesView user={user} />}
-        {activeView === 'knowledge' && <KnowledgeView user={user} />}
         {activeView === 'chat' && <ChatView user={user} />}
       </main>
     </div>

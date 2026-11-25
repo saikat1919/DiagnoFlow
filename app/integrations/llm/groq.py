@@ -41,6 +41,7 @@ class GroqProvider:
             raise LLMUnavailableError(str(exc)) from exc
         return response.choices[0].message.content or ""
 
+    @staticmethod
     def to_openai_messages(
             system: str, messages: list[ChatMessage], image_url: str | None
     ) -> list[dict]:
@@ -64,10 +65,9 @@ class GroqProvider:
         messages: list[ChatMessage],
         tools: list[ToolSpec],
         run_tool: ToolRunner,
+        image_url: str | None = None,
     ) -> LLMReply:
-        payload: list[dict] = [{"role": "system", "content": system}] + [
-            {"role": m.role, "content": m.content} for m in messages
-        ]
+        payload = self.to_openai_messages(system, messages, image_url)
         tool_calls: list[str] = []
 
         for round_no in range(1, MAX_TOOL_ROUNDS + 1):

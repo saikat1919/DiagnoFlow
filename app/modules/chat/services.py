@@ -37,6 +37,12 @@ class ChatService:
         history_text = question.strip() or "[Image attached]"
         return await self._run(text, history_text, image_url)
 
+    async def run_tool(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
+        return await execute_tool(self.summaries, self.knowledge, self.user, name, args)
+
+    async def end_session(self) -> None:
+        await self.history.clear(self.session_key)
+
     async def _run(
             self, content: str,
             history_content: str,
