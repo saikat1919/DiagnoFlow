@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str
     ACCESS_TOKEN_MINUTES: int
 
+    GROQ_API_KEY: SecretStr
+    GROQ_MODEL: str
+    GROQ_BASE_URL: str
+    EMBEDDINGS_URL: str
+
     @property
     def DATABASE_URL(self) -> URL:
         return URL.create(

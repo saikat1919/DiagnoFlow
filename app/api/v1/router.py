@@ -10,6 +10,9 @@ from app.modules.inventory.controllers import inventory_router
 from app.modules.purchases.controllers import purchase_router
 from app.modules.prescriptions.controllers import prescription_router
 from app.modules.sales.controllers import sale_router
+from app.modules.knowledge.controllers import knowledge_router
+from app.modules.chat.controllers import chat_router
+
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(auth_router)
 api_router.include_router(patient_router)
@@ -24,3 +27,5 @@ api_router.include_router(inventory_router)
 api_router.include_router(purchase_router)
 api_router.include_router(prescription_router)
 api_router.include_router(sale_router)
+api_router.include_router(knowledge_router)
+api_router.include_router(chat_router)

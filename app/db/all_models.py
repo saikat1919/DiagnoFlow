@@ -10,3 +10,4 @@ from app.modules.inventory.models import MedicineBatch, StockMovement
 from app.modules.purchases.models import PurchaseOrder, PurchaseOrderItem
 from app.modules.prescriptions.models import Prescription, PrescriptionItem
 from app.modules.sales.models import Sale, SaleItem
+from app.modules.knowledge.models import KnowledgeChunk

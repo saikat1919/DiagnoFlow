@@ -9,7 +9,7 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-#      EMBEDDINGS_URL: http://embedder:80
+      EMBEDDINGS_URL: http://embedder:80
     volumes:
       - ./app:/app/app
       - ./alembic:/app/alembic
@@ -40,15 +40,15 @@ services:
       timeout: 5s
       retries: 10
 
-#  embedder:
-#    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9.4
-#    container_name: sales-agent-embedder
-#    restart: unless-stopped
-#    command: --model-id unsloth/embeddinggemma-300m
-#    ports:
-#      - "8090:80"
-#    volumes:
-#      - diagnoflow-hf-cache:/data
+  embedder:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9.4
+    container_name: sales-agent-embedder
+    restart: unless-stopped
+    command: --model-id unsloth/embeddinggemma-300m
+    ports:
+      - "8090:80"
+    volumes:
+      - diagnoflow-hf-cache:/data
 
 volumes:
   diagnoflow-db-data:
