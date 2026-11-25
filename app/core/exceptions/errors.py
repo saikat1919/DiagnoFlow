@@ -22,3 +22,6 @@ class UnauthorizedError(AppError):
 
 class ForbiddenError(AppError):
     """Raised when the caller is logged in but not allowed to do this."""
+
+class ValidationError(AppError):
+    """Raised when input is well-formed but invalid (bad file type, too large)."""

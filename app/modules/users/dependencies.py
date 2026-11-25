@@ -58,9 +58,23 @@ async def require_admin_or_lab(user: CurrentUserDep) -> User:
 
 AdminOrLabDep = Annotated[User, Depends(require_admin_or_lab)]
 
+async def require_pharmacy_manager(user: CurrentUserDep) -> User:
+    if user.role != Role.PHARMACY_MANAGER:
+        raise ForbiddenError("Pharmacy manager privileges required")
+    return user
+
+PharmacyManagerDep = Annotated[User, Depends(require_pharmacy_manager)]
+
 async def require_lab(user: CurrentUserDep) -> User:
     if user.role != Role.LAB_TECHNICIAN:
         raise ForbiddenError("Lab privileges required")
     return user
 
 LabDep = Annotated[User, Depends(require_lab)]
+
+async def require_admin_or_pharmacy(user: CurrentUserDep) -> User:
+    if user.role not in (Role.SYSTEM_ADMIN, Role.PHARMACIST, Role.PHARMACY_MANAGER):
+        raise ForbiddenError("Admin or pharmacy privileges required")
+    return user
+
+AdminOrPharmacyDep = Annotated[User, Depends(require_admin_or_pharmacy)]

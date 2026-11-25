@@ -1,6 +1,7 @@
 from typing import Annotated
 from fastapi import Depends
 from app.db.session import SessionDep
+from app.core.config import get_settings
 from app.modules.test_reports.repositories import TestReportRepository
 from app.modules.test_reports.services import TestReportService
 from app.modules.diagnostic_orders.dependencies import DiagnosticOrderRepositoryDep
@@ -15,6 +16,6 @@ def get_test_report_service(
     repo: TestReportRepositoryDep,
     order_repo: DiagnosticOrderRepositoryDep,
 ) -> TestReportService:
-    return TestReportService(repo, order_repo)
+    return TestReportService(repo, order_repo, get_settings().UPLOAD_DIR)
 
 TestReportServiceDep = Annotated[TestReportService, Depends(get_test_report_service)]

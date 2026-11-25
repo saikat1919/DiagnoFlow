@@ -10,16 +10,31 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       EMBEDDINGS_URL: http://embedder:80
+      UPLOAD_DIR: /app/uploads
     volumes:
       - ./app:/app/app
       - ./alembic:/app/alembic
       - ./alembic.ini:/app/alembic.ini
       - ./scripts:/app/scripts
+      - report_uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
     command: >
       uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: diagnoflow-frontend
+    environment:
+      API_URL: http://localhost:8002
+      PORT: "80"
+    ports:
+      - "5174:80"
+    depends_on:
+      - diagnoflow
 
   db:
     image: pgvector/pgvector:pg17
@@ -53,3 +68,4 @@ services:
 volumes:
   diagnoflow-db-data:
   diagnoflow-hf-cache:
+  report_uploads:

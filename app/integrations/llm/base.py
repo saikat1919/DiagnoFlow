@@ -27,4 +27,5 @@ class LLMProvider(Protocol):
         messages: list[ChatMessage],
         tools: list[ToolSpec],
         run_tool: ToolRunner,
+        image_url: str | None = None
     ) -> LLMReply: ...

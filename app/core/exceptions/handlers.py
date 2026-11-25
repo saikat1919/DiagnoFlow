@@ -7,6 +7,7 @@ from app.core.exceptions.errors import (
     LLMUnavailableError,
     NotFoundError,
     UnauthorizedError,
+    ValidationError
 )
 
 
@@ -37,3 +38,7 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(ForbiddenError)
     async def forbidden(_: Request, exc: ForbiddenError) -> JSONResponse:
         return JSONResponse(status_code=403, content={"detail": str(exc)})
+
+    @app.exception_handler(ValidationError)
+    async def validation_error(_: Request, exc: ValidationError) -> JSONResponse:
+        return JSONResponse(status_code=400, content={"detail": str(exc)})

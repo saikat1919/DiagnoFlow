@@ -2,12 +2,12 @@ import uuid
 from fastapi import APIRouter, status
 from app.modules.suppliers.schemas import SupplierCreate, SupplierRead, SupplierUpdate
 from app.modules.suppliers.dependencies import SupplierServiceDep
-from app.modules.users.dependencies import StaffDep, PharmacyDep
+from app.modules.users.dependencies import StaffDep, PharmacyManagerDep
 
 supplier_router = APIRouter(prefix="/suppliers", tags=["suppliers"])
 
 @supplier_router.post("/add", response_model=SupplierRead, status_code=status.HTTP_201_CREATED)
-async def add_supplier(data: SupplierCreate, service: SupplierServiceDep, pharmacy: PharmacyDep) -> SupplierRead:
+async def add_supplier(data: SupplierCreate, service: SupplierServiceDep, manager: PharmacyManagerDep) -> SupplierRead:
     return await service.create_supplier(data)
 
 @supplier_router.get("", response_model=list[SupplierRead], status_code=status.HTTP_200_OK)
@@ -27,5 +27,5 @@ async def get_supplier(supplier_id: uuid.UUID, service: SupplierServiceDep, staf
     return await service.get_supplier_by_id(supplier_id)
 
 @supplier_router.patch("/{supplier_id}", response_model=SupplierRead, status_code=status.HTTP_200_OK)
-async def update_supplier(supplier_id: uuid.UUID, data: SupplierUpdate, service: SupplierServiceDep, pharmacy: PharmacyDep) -> SupplierRead:
+async def update_supplier(supplier_id: uuid.UUID, data: SupplierUpdate, service: SupplierServiceDep, manager: PharmacyManagerDep) -> SupplierRead:
     return await service.update_supplier(supplier_id, data)

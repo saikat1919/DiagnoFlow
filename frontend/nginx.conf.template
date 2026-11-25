@@ -1,0 +1,20 @@
+server {
+    listen ${PORT};
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Single-page app: every unknown path serves index.html.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Never cache the runtime API config; cache hashed assets forever.
+    location = /config.js {
+        add_header Cache-Control "no-store";
+        try_files $uri =404;
+    }
+    location /assets/ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+}

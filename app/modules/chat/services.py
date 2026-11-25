@@ -30,6 +30,18 @@ class ChatService:
         self.expires_at = expires_at
 
     async def reply(self, content: str) -> AssistantResponse:
+        return await self._run(content, content, None)
+
+    async def reply_with_image(self, question: str, image_url: str) -> AssistantResponse:
+        text = question.strip() or "Read this image and tell me what it shows. If it is a prescription, list the medicines exactly as written."
+        history_text = question.strip() or "[Image attached]"
+        return await self._run(text, history_text, image_url)
+
+    async def _run(
+            self, content: str,
+            history_content: str,
+            image_url: str | None
+    ) -> AssistantResponse:
         now = datetime.now(UTC)
         system = ASSISTANT_PROMPT.replace("{role}", self.user.role.value)
         messages = await self.history.get(self.session_key, now)
@@ -39,14 +51,9 @@ class ChatService:
             messages=messages,
             tools=tools_for_role(self.user.role),
             run_tool=self.run_tool,
+            image_url=image_url,
         )
         await self.history.append(
-            self.session_key, self.expires_at, now, content, result.text
+            self.session_key, self.expires_at, now, history_content, result.text
         )
         return AssistantResponse(reply=result.text, tool_calls=result.tool_calls)
-
-    async def run_tool(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
-        return await execute_tool(self.summaries, self.knowledge, self.user, name, args)
-
-    async def end_session(self) -> None:
-        await self.history.clear(self.session_key)

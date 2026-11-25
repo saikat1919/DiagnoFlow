@@ -1,5 +1,6 @@
 import uuid
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, File, Form, UploadFile
+from fastapi.responses import FileResponse
 from app.modules.test_reports.models import ReportStatus
 from app.modules.test_reports.schemas import ReportCreate, ReportRead, MyReportRead
 from app.modules.test_reports.dependencies import TestReportServiceDep
@@ -12,6 +13,47 @@ test_report_router = APIRouter(prefix="/test-reports", tags=["test reports"])
 @test_report_router.post("/add", response_model=ReportRead, status_code=status.HTTP_201_CREATED)
 async def add_report(data: ReportCreate, service: TestReportServiceDep, lab: LabDep) -> ReportRead:
     return await service.create_report(data, uploaded_by=lab.id)
+
+@test_report_router.post("/upload", response_model=ReportRead, status_code=status.HTTP_201_CREATED)
+async def upload_report(
+    service: TestReportServiceDep,
+    lab: LabDep,
+    order_item_id: uuid.UUID = Form(...),
+    file: UploadFile = File(...),
+) -> ReportRead:
+    return await service.create_report_upload(
+        order_item_id, await file.read(), file.filename or "report", lab.id
+    )
+
+@test_report_router.post("/{report_id}/upload", response_model=ReportRead, status_code=status.HTTP_200_OK)
+async def replace_report_upload(
+    report_id: uuid.UUID,
+    service: TestReportServiceDep,
+    lab: LabDep,
+    file: UploadFile = File(...),
+) -> ReportRead:
+    return await service.replace_report_file(report_id, await file.read(), file.filename or "report")
+
+@test_report_router.get("/me/{report_id}/file")
+async def download_my_report_file(
+    report_id: uuid.UUID,
+    service: TestReportServiceDep,
+    user: CurrentUserDep,
+) -> FileResponse:
+    if user.role != Role.PATIENT or user.patient_id is None:
+        raise ForbiddenError("Only patient accounts can download their own reports")
+    path, media_type, filename = await service.get_my_report_file(report_id, user.patient_id)
+    return FileResponse(path, media_type=media_type, filename=filename)
+
+
+@test_report_router.get("/{report_id}/file")
+async def download_report_file(
+    report_id: uuid.UUID,
+    service: TestReportServiceDep,
+    lab: LabDep,
+) -> FileResponse:
+    path, media_type, filename = await service.get_report_file_for_lab(report_id)
+    return FileResponse(path, media_type=media_type, filename=filename)
 
 @test_report_router.get("", response_model=list[ReportRead], status_code=status.HTTP_200_OK)
 async def list_reports(

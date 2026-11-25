@@ -101,7 +101,7 @@ _TOOLS_FOR_ROLE: dict[Role, list[ToolSpec]] = {
         GET_ORDER_SUMMARY, GET_REPORT_SUMMARY, SEARCH_POLICIES, SEARCH_TESTS,
     ],
     Role.PHARMACIST: [
-        GET_PHARMACY_SUMMARY, GET_SALES_SUMMARY, GET_PURCHASE_SUMMARY,
+        GET_PHARMACY_SUMMARY, GET_SALES_SUMMARY,
         GET_PRESCRIPTION_SUMMARY, SEARCH_MEDICINES, SEARCH_POLICIES, SEARCH_TESTS,
     ],
     Role.PHARMACY_MANAGER: [
@@ -120,10 +120,10 @@ def tools_for_role(role: Role) -> list[ToolSpec]:
 
 def _parse_date(args: dict[str, Any]) -> date:
     raw = args.get("date")
-    if raw is None:
+    if raw is None or str(raw).strip() == "":
         return date.today()
     try:
-        return date.fromisoformat(str(raw))
+        return date.fromisoformat(str(raw).strip())
     except ValueError as exc:
         raise ValueError("date must be YYYY-MM-DD") from exc
 

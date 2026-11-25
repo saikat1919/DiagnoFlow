@@ -78,6 +78,7 @@ class MyOrderItemRead(BaseModel):
 
     id: uuid.UUID
     test: TestSummary
+    price_at_order: Decimal
     item_status: WorkStatus
 
 class MyOrderRead(BaseModel):

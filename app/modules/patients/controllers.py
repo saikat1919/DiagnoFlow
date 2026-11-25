@@ -9,7 +9,7 @@ from app.modules.users.models import Role
 
 patient_router = APIRouter(prefix="/patients", tags=["patients"])
 
-@patient_router.post("/add", response_model=PatientCreate, status_code=status.HTTP_201_CREATED)
+@patient_router.post("/add", response_model=PatientRead, status_code=status.HTTP_201_CREATED)
 async def add_patient(data: PatientCreate, service: PatientServiceDep, staff: StaffDep) -> PatientRead:
     return await service.create_patient(data)
 

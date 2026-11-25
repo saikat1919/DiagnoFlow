@@ -70,7 +70,7 @@ class TestCatalogueRepository:
         if active_only:
             base = base.where(TestCatalogue.is_active.is_(True))
         total = await self.db_session.scalar(
-            select(func.count().select_from(base.subquery()))
+            select(func.count()).select_from(base.subquery())
         )
         stmt = (
             base.order_by(TestCatalogue.test_name, TestCatalogue.test_code)

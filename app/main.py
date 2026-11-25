@@ -7,6 +7,7 @@ import app.db.all_models
 from app.api.v1.router import api_router
 from app.core.exceptions.handlers import register_exception_handlers
 from app.mcp.server import mcp_asgi_app, session_manager
+from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager
@@ -14,6 +15,14 @@ async def lifespan(_: FastAPI):
     async with session_manager.run():
         yield
 app = FastAPI(title=get_settings().APP_NAME, lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[o.strip() for o in get_settings().CORS_ORIGINS.split(",") if o.strip()],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 register_exception_handlers(app)
 app.include_router(router=api_router)

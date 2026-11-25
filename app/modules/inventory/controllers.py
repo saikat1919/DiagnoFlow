@@ -6,7 +6,7 @@ from app.modules.inventory.schemas import (
     StockMovementCreate, StockMovementRead,
 )
 from app.modules.inventory.dependencies import MedicineBatchServiceDep, StockMovementServiceDep
-from app.modules.users.dependencies import StaffDep, PharmacyDep
+from app.modules.users.dependencies import StaffDep, PharmacyDep, PharmacyManagerDep
 
 inventory_router = APIRouter(prefix="/inventory", tags=["inventory"])
 
@@ -45,7 +45,7 @@ async def get_batch(batch_id: uuid.UUID, service: MedicineBatchServiceDep, staff
     return await service.get_batch_by_id(batch_id)
 
 @inventory_router.patch("/batches/{batch_id}", response_model=BatchRead, status_code=status.HTTP_200_OK)
-async def update_batch(batch_id: uuid.UUID, data: BatchUpdate, service: MedicineBatchServiceDep, pharmacy: PharmacyDep) -> BatchRead:
+async def update_batch(batch_id: uuid.UUID, data: BatchUpdate, service: MedicineBatchServiceDep, manager: PharmacyManagerDep) -> BatchRead:
     return await service.update_batch_status(batch_id, data)
 
 @inventory_router.get("/stock/{medicine_id}", response_model=AvailableStockRead, status_code=status.HTTP_200_OK)
@@ -53,8 +53,8 @@ async def available_stock(medicine_id: uuid.UUID, service: MedicineBatchServiceD
     return await service.get_available_stock(medicine_id)
 
 @inventory_router.post("/movements/add", response_model=StockMovementRead, status_code=status.HTTP_201_CREATED)
-async def add_movement(data: StockMovementCreate, service: StockMovementServiceDep, pharmacy: PharmacyDep) -> StockMovementRead:
-    return await service.create_movement(data, created_by=pharmacy.id)
+async def add_movement(data: StockMovementCreate, service: StockMovementServiceDep, manager: PharmacyManagerDep) -> StockMovementRead:
+    return await service.create_movement(data, created_by=manager.id)
 
 @inventory_router.get("/movements/batch/{batch_id}", response_model=list[StockMovementRead], status_code=status.HTTP_200_OK)
 async def list_movements(

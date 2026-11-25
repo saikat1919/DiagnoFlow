@@ -33,7 +33,7 @@ class PatientRepository:
             pattern = f"%{q}%"
             base = base.where(
                 or_(
-                    Patient.patient_name.ilike(pattern),
+                    func.concat(Patient.patient_first_name, " ", Patient.patient_last_name).ilike(pattern),
                     Patient.phone_number.ilike(pattern),
                     Patient.patient_no.ilike(pattern)
                 )

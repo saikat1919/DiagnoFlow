@@ -3,7 +3,7 @@ from fastapi import APIRouter, status
 from app.modules.medicines.models import DosageForm
 from app.modules.medicines.schemas import MedicineCreate, MedicineRead, MedicineUpdate
 from app.modules.medicines.dependencies import MedicineServiceDep
-from app.modules.users.dependencies import StaffDep, PharmacyDep
+from app.modules.users.dependencies import StaffDep, PharmacyDep, CurrentUserDep
 
 medicine_router = APIRouter(prefix="/medicines", tags=["medicines"])
 
@@ -14,7 +14,7 @@ async def add_medicine(data: MedicineCreate, service: MedicineServiceDep, pharma
 @medicine_router.get("", response_model=list[MedicineRead], status_code=status.HTTP_200_OK)
 async def list_medicines(
     service: MedicineServiceDep,
-    staff: StaffDep,
+    user: CurrentUserDep,
     q: str | None = None,
     dosage_form: DosageForm | None = None,
     active_only: bool = True,
@@ -25,7 +25,7 @@ async def list_medicines(
     return medicines
 
 @medicine_router.get("/{medicine_id}", response_model=MedicineRead, status_code=status.HTTP_200_OK)
-async def get_medicine(medicine_id: uuid.UUID, service: MedicineServiceDep, staff: StaffDep) -> MedicineRead:
+async def get_medicine(medicine_id: uuid.UUID, service: MedicineServiceDep, user: CurrentUserDep) -> MedicineRead:
     return await service.get_medicine_by_id(medicine_id)
 
 @medicine_router.patch("/{medicine_id}", response_model=MedicineRead, status_code=status.HTTP_200_OK)

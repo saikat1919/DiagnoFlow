@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     GROQ_BASE_URL: str
     EMBEDDINGS_URL: str
 
+    UPLOAD_DIR: str = "uploads"
+
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:5174"
+
     @property
     def DATABASE_URL(self) -> URL:
         return URL.create(

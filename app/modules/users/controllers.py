@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from app.modules.users.models import Role
 from app.modules.users.schemas import ReadUser, CreateUserStaff, Token, UserUpdate, PatientAccountCreate
-from app.modules.users.dependencies import UserServiceDep, CurrentUserDep, AdminDep
+from app.modules.users.dependencies import UserServiceDep, CurrentUserDep, AdminDep, AdminOrReceptionistDep
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 user_router = APIRouter(prefix="/users", tags=["users"])
@@ -30,7 +30,7 @@ async def me_edit(data: UserUpdate, service: UserServiceDep, user: CurrentUserDe
     return await service.update_staff_user(user.id, data)
 
 @auth_router.post("/register/patient", response_model=ReadUser, status_code=status.HTTP_201_CREATED)
-async def register_patient(data: PatientAccountCreate, service: UserServiceDep, admin: AdminDep) -> ReadUser:
+async def register_patient(data: PatientAccountCreate, service: UserServiceDep, admin_or_staff: AdminOrReceptionistDep) -> ReadUser:
     return await service.create_patient_account(data)
 
 @user_router.get("", response_model=list[ReadUser], status_code=status.HTTP_200_OK)

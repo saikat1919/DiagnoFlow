@@ -41,6 +41,23 @@ class GroqProvider:
             raise LLMUnavailableError(str(exc)) from exc
         return response.choices[0].message.content or ""
 
+    def to_openai_messages(
+            system: str, messages: list[ChatMessage], image_url: str | None
+    ) -> list[dict]:
+        payload: list[dict] = [{"role": "system", "content": system}]
+        for index, m in enumerate(messages):
+            if image_url is not None and index == len(messages) - 1 and m.role == "user":
+                payload.append({
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": m.content},
+                        {"type": "image_url", "image_url": {"url": image_url}},
+                    ],
+                })
+            else:
+                payload.append({"role": m.role, "content": m.content})
+        return payload
+
     async def chat_with_tools(
         self,
         system: str,

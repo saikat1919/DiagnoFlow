@@ -6,7 +6,7 @@ from app.modules.sales.schemas import (
     DailyTotalRead, MySaleRead, SaleCreate, SalePaymentUpdate, SaleRead,
 )
 from app.modules.sales.dependencies import SaleServiceDep
-from app.modules.users.dependencies import CurrentUserDep, StaffDep, PharmacyDep
+from app.modules.users.dependencies import CurrentUserDep, StaffDep, PharmacyDep, PharmacyManagerDep, AdminOrPharmacyDep
 from app.modules.users.models import Role
 from app.core.exceptions.errors import ForbiddenError
 
@@ -35,7 +35,7 @@ async def list_sales(
 @sale_router.get("/daily-totals", response_model=list[DailyTotalRead], status_code=status.HTTP_200_OK)
 async def daily_totals(
     service: SaleServiceDep,
-    staff: StaffDep,
+    admin_or_pharmacy: AdminOrPharmacyDep,
     date_from: date,
     date_to: date,
 ) -> list[DailyTotalRead]:
