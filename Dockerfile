@@ -35,10 +35,11 @@ ENV PATH="/app/.venv/bin:$PATH" \
 # Now copy the application code
 COPY --chown=app:app app/ ./app/
 COPY --chown=app:app alembic/ ./alembic/
+COPY --chown=app:app scripts/ ./scripts/
 COPY --chown=app:app alembic.ini ./alembic.ini ./
 
 USER app
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]

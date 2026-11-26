@@ -1,0 +1,100 @@
+
+databases:
+  - name: diagnoflow-db
+    databaseName: diagnoflow
+    user: diagnoflow_user
+    plan: free
+    region: singapore
+    postgresMajorVersion: "17"
+
+services:
+
+  # -------------------------------
+  # Backend API
+  # -------------------------------
+  - type: web
+    name: diagnoflow-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: "sh -c 'alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}'"
+    healthCheckPath: /health
+
+    envVars:
+      - key: APP_NAME
+        value: DiagnoFlow
+
+      - key: DEBUG
+        value: "false"
+
+      - key: DB_HOST
+        fromDatabase:
+          name: diagnoflow-db
+          property: host
+
+      - key: DB_PORT
+        fromDatabase:
+          name: diagnoflow-db
+          property: port
+
+      - key: DB_USER
+        fromDatabase:
+          name: diagnoflow-db
+          property: user
+
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: diagnoflow-db
+          property: password
+
+      - key: DB_NAME
+        fromDatabase:
+          name: diagnoflow-db
+          property: database
+
+      - key: DB_SCHEMA
+        value: diagnoflow
+
+      - key: JWT_SECRET
+        generateValue: true
+
+      - key: JWT_ALGORITHM
+        value: HS256
+
+      - key: ACCESS_TOKEN_MINUTES
+        value: "30"
+
+      - key: GROQ_API_KEY
+        sync: false
+
+      - key: GROQ_MODEL
+        sync: false
+
+      - key: GROQ_BASE_URL
+        value: https://api.groq.com/openai/v1
+
+      - key: EMBEDDINGS_URL
+        sync: false
+
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
+
+      - key: CORS_ORIGINS
+        value: https://diagnoflow-frontend.onrender.com
+
+  # -------------------------------
+  # Frontend
+  # -------------------------------
+  - type: web
+    name: diagnoflow-frontend
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+
+    envVars:
+      - key: API_URL
+        value: https://diagnoflow-api.onrender.com
