@@ -70,10 +70,22 @@ GET_MY_REPORT_UPDATES = _tool(
 )
 SEARCH_MEDICINES = _tool(
     "search_medicines",
-    "Search the pharmacy for medicines by brand or generic name. Returns the name, strength, price and whether each is in stock.",
-    {"query": {"type": "string", "description": "Brand or generic name, e.g. 'napa' or 'paracetamol'."}},
+    (
+        "Search the live pharmacy database for medicines by brand name, "
+        "generic name, or strength. Search using only the medicine identity. "
+        "Ignore requested quantity and conversational words. "
+        "Returns database-backed medicine details, selling price, "
+        "usable stock quantity, and stock availability."
+    ),
+    {
+        "query": {
+            "type": "string",
+            "description": "Medicine name and/or strength, e.g. 'Napa Extra' or 'Paracetamol 500 mg'.",
+        }
+    },
     ["query"],
 )
+
 SEARCH_POLICIES = _tool(
     "search_policies",
     "Search the centre's company policies. Returns the 3 most relevant policy sections.",
@@ -166,11 +178,12 @@ async def execute_tool(
                 "reports_in_preparation": await summaries.my_pending_report_count(user.patient_id),
             }
         if name == "search_medicines":
-            query = args["query"]
-            hits = await knowledge.search(query, SearchMode.HYBRID, Source.MEDICINE, limit=3)
+            query = args["query"].strip()
+            medicines = await summaries.medicine_stock(query)
+
             return {
-                "sections": [{"title": h.title, "text": h.content} for h in hits],
-                "stock": await summaries.medicine_stock(query),
+                "medicines": medicines,
+                "source": "live_pharmacy_database",
             }
         if name == "search_policies":
             hits = await knowledge.search(args["query"], SearchMode.HYBRID, Source.POLICY, limit=3)
