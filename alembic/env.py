@@ -68,6 +68,7 @@ def do_run_migrations(connection: Connection) -> None:
     connection.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
     connection.commit()
     connection.execute(text(f"SET search_path to '{schema}', public"))
+    connection.commit()
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
