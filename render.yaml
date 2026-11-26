@@ -75,7 +75,7 @@ services:
       - key: GROQ_BASE_URL
         value: https://api.groq.com/openai/v1
 
-      - key: EMBEDDINGS_URL
+      - key: GEMINI_API_KEY
         sync: false
 
       - key: UPLOAD_DIR

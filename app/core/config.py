@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     GROQ_API_KEY: SecretStr
     GROQ_MODEL: str
     GROQ_BASE_URL: str
-    EMBEDDINGS_URL: str
+    GEMINI_API_KEY: SecretStr
 
     UPLOAD_DIR: str = "uploads"
 
