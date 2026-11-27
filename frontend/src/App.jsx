@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, getToken, login, logout, setToken, userName, userRole } from './api.js'
 import { ErrorBanner, Field, inputProps } from './ui.jsx'
-import { Dashboard, PatientsView, UsersView } from './views/people.jsx'
 import { CatalogueView, OrdersView, ReportsView } from './views/operations.jsx'
 import { InventoryView, MedicinesView, PharmacyView, PurchasesView } from './views/pharmacy.jsx'
 import { ChatView, PrescriptionsView, SalesView } from './views/care.jsx'
