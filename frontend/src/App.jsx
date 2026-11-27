@@ -5,6 +5,7 @@ import { Dashboard, PatientsView, UsersView } from './views/people.jsx'
 import { CatalogueView, OrdersView, ReportsView } from './views/operations.jsx'
 import { InventoryView, MedicinesView, PharmacyView, PurchasesView } from './views/pharmacy.jsx'
 import { ChatView, PrescriptionsView, SalesView } from './views/care.jsx'
+import { Dashboard, PatientsView, UsersView, PatientAccountView } from './views/people.jsx'
 
 // Navigation, by role. The backend enforces the same rules; hiding a
 // page here is only for clarity — a forbidden call still returns 403.
@@ -26,6 +27,7 @@ const NAV = {
   RECEPTIONIST: [
     ['dashboard', 'Dashboard'],
     ['patients', 'Patients'],
+    ['patient-accounts', 'Patient accounts'],
     ['orders', 'Orders'],
     ['reports', 'Reports'],
     ['catalogue', 'Test catalogue'],
@@ -180,9 +182,11 @@ export default function App() {
   const STAFF_VIEWS = ['dashboard', 'patients', 'orders', 'reports', 'catalogue', 'medicines', 'inventory', 'purchases', 'prescriptions', 'sales', 'chat']
   const PATIENT_VIEWS = ['dashboard', 'orders', 'reports', 'catalogue', 'medicines', 'prescriptions', 'sales', 'chat']
   const allowedViews = userRole(user) === 'PATIENT'
-    ? PATIENT_VIEWS
-    : userRole(user) === 'SYSTEM_ADMIN'
-      ? [...STAFF_VIEWS, 'users']
+  ? PATIENT_VIEWS
+  : userRole(user) === 'SYSTEM_ADMIN'
+    ? [...STAFF_VIEWS, 'users', 'patient-accounts']
+    : userRole(user) === 'RECEPTIONIST'
+      ? [...STAFF_VIEWS, 'patient-accounts']
       : STAFF_VIEWS
   const activeView = allowedViews.includes(view) ? view : 'dashboard'
 
@@ -214,6 +218,7 @@ export default function App() {
       <main className="main">
         {activeView === 'dashboard' && <Dashboard user={user} go={setView} />}
         {activeView === 'users' && <UsersView user={user} />}
+        {activeView === 'patient-accounts' && <PatientAccountView />}
         {activeView === 'patients' && <PatientsView user={user} />}
         {activeView === 'orders' && <OrdersView user={user} />}
         {activeView === 'reports' && <ReportsView user={user} />}

@@ -522,7 +522,6 @@ export function UsersView({ user }) {
             </div>
             <button type="submit" className="primary">Create patient account</button>
           </form>
-          <p className="muted">Note: at the checked backend version this endpoint only allows the system admin. If receptionists must also create patient accounts, the backend guard has to change to AdminOrReceptionistDep.</p>
         </div>
       </div>
 
@@ -582,6 +581,47 @@ export function UsersView({ user }) {
           </form>
         </div>
       ) : null}
+    </div>
+  )
+}
+
+/* ---------------- Patient accounts (admin + receptionist) ---------------- */
+
+export function PatientAccountView() {
+  const [patientForm, setPatientForm] = useState({ username: '', password: '' })
+  const [error, setError] = useState('')
+  const [createdFor, setCreatedFor] = useState('')
+
+  async function createPatientAccount(e) {
+    e.preventDefault()
+    setError('')
+    setCreatedFor('')
+    try {
+      await api('/auth/register/patient', { method: 'POST', body: patientForm })
+      setCreatedFor(patientForm.username)
+      setPatientForm({ username: '', password: '' })
+    } catch (e2) {
+      setError(e2.message)
+    }
+  }
+
+  return (
+    <div>
+      <h2>Patient accounts</h2>
+      <p className="lead">Create a login account for a patient who is already registered.</p>
+      <ErrorBanner error={error} onClose={() => setError('')} />
+      {createdFor ? <p className="muted">Patient login account created for {createdFor}.</p> : null}
+      <div className="card">
+        <h3>Create a patient login account</h3>
+        <p className="muted">The patient must already be registered. The username is the patient&apos;s phone number.</p>
+        <form onSubmit={createPatientAccount}>
+          <div className="form-grid">
+            <Field label="Username (patient phone)"><input required {...inputProps(patientForm.username, (v) => setPatientForm({ ...patientForm, username: v }))} /></Field>
+            <Field label="Password"><input required type="password" {...inputProps(patientForm.password, (v) => setPatientForm({ ...patientForm, password: v }))} /></Field>
+          </div>
+          <button type="submit" className="primary">Create patient account</button>
+        </form>
+      </div>
     </div>
   )
 }
