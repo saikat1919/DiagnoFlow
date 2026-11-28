@@ -29,7 +29,7 @@ class MCPAuthMiddleware:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
-        headers = {key.lower(): value.decode() for key, value in scope["headers"]}
+        headers = {key.decode("latin-1").lower(): value.decode("latin-1") for key, value in scope["headers"]}
         auth = headers.get("authorization", "")
         if not auth.startswith("Bearer "):
             await self._unauthorized(send)
